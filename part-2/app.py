@@ -34,26 +34,36 @@ def showSignin():
 
 @app.route('/api/validateLogin', methods=['POST'])
 def validateLogin():
+    connection = None
+    cursor = None
     try:
         _username = request.form['inputEmail']
         _password = request.form['inputPassword']
-        con = mysql.connect()
+        connection = mysql.connect()
+        cursor = connection.cursor()
         cursor.callproc('sp_validateLogin', (_username,))
         data = cursor.fetchall()
         if len(data) > 0:
             if check_password_hash(str(data[0][3]), _password):
                 session['user'] = data[0][0]
-                return redirect('/userHome')
+                return redirect('/userhome')
             else:
                 return render_template('error.html', error='Wrong Email address or Password')
         else:
             return render_template('error.html', error='Wrong Email address or Password')
     except Exception as e:
         return render_template('error.html', error=str(e))
+    finally:
+        if cursor is not None:
+            cursor.close()
+        if connection is not None:
+            connection.close()
 
 
 @app.route('/api/signup', methods=['POST'])
 def signUp():
+    connection = None
+    cursor = None
     try:
         _name = request.form['inputName']
         _email = request.form['inputEmail']
@@ -64,14 +74,14 @@ def signUp():
 
             # All Good, let's call MySQL
 
-            conn = mysql.connect()
-            cursor = conn.cursor()
+            connection = mysql.connect()
+            cursor = connection.cursor()
             _hashed_password = generate_password_hash(_password)
             cursor.callproc('sp_createUser', (_name, _email, _hashed_password))
             data = cursor.fetchall()
 
             if len(data) == 0:
-                conn.commit()
+                connection.commit()
                 return json.dumps({'message': 'User created successfully !'})
             else:
                 return json.dumps({'error': str(data[0])})
@@ -81,8 +91,10 @@ def signUp():
     except Exception as e:
         return json.dumps({'error': str(e)})
     finally:
-        cursor.close()
-        conn.close()
+        if cursor is not None:
+            cursor.close()
+        if connection is not None:
+            connection.close()
 
 
 @app.route('/userhome')
