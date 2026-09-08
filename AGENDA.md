@@ -1,9 +1,9 @@
 # Project Agenda
 
 - Inspect and understand the existing Flask application. [done]
-- Identify Python dependencies and database requirements.
-- Add a dependency file for the Flask application.
-- Move database settings and Flask secrets to environment variables.
+- Identify Python dependencies and database requirements. [done]
+- Add a dependency file for the Flask application. [done]
+- Move database settings and Flask secrets to environment variables. [done]
 - Fix the existing Flask issues needed for reliable startup.
 - Create the MySQL schema and initialization scripts.
 - Create the Flask application Dockerfile.

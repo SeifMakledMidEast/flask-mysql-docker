@@ -1,18 +1,20 @@
-from flask import Flask, render_template, json, request, session
+import os
+
+from flask import Flask, json, redirect, render_template, request, session
 from flaskext.mysql import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 
 mysql = MySQL()
 app = Flask(__name__)
 
-# MySQL configurations
-app.config['MYSQL_DATABASE_USER'] = '<user>'
-app.config['MYSQL_DATABASE_PASSWORD'] = '<password>'
-app.config['MYSQL_DATABASE_DB'] = '<db-name>'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+# MySQL configuration comes from the environment so secrets stay out of Git.
+app.config['MYSQL_DATABASE_USER'] = os.environ.get('MYSQL_DATABASE_USER', 'appuser')
+app.config['MYSQL_DATABASE_PASSWORD'] = os.environ['MYSQL_DATABASE_PASSWORD']
+app.config['MYSQL_DATABASE_DB'] = os.environ.get('MYSQL_DATABASE_DB', 'flaskapp')
+app.config['MYSQL_DATABASE_HOST'] = os.environ.get('MYSQL_DATABASE_HOST', 'localhost')
 mysql.init_app(app)
 
-app.secret_key = 'why would I tell you my secret key?'
+app.secret_key = os.environ['FLASK_SECRET_KEY']
 
 
 @app.route('/')
