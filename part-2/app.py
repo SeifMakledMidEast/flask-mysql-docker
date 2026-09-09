@@ -1,18 +1,20 @@
-from flask import Flask, render_template, json, request, session
+import os
+
+from flask import Flask, json, redirect, render_template, request, session
 from flaskext.mysql import MySQL
 from werkzeug.security import generate_password_hash, check_password_hash
 
 mysql = MySQL()
 app = Flask(__name__)
 
-# MySQL configurations
-app.config['MYSQL_DATABASE_USER'] = '<user>'
-app.config['MYSQL_DATABASE_PASSWORD'] = '<password>'
-app.config['MYSQL_DATABASE_DB'] = '<db-name>'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+# MySQL configurations are supplied by Docker Compose or the local environment.
+app.config['MYSQL_DATABASE_USER'] = os.environ['MYSQL_DATABASE_USER']
+app.config['MYSQL_DATABASE_PASSWORD'] = os.environ['MYSQL_DATABASE_PASSWORD']
+app.config['MYSQL_DATABASE_DB'] = os.environ['MYSQL_DATABASE_DB']
+app.config['MYSQL_DATABASE_HOST'] = os.environ['MYSQL_DATABASE_HOST']
 mysql.init_app(app)
 
-app.secret_key = 'why would I tell you my secret key?'
+app.secret_key = os.environ['FLASK_SECRET_KEY']
 
 
 @app.route('/')
@@ -36,12 +38,13 @@ def validateLogin():
         _username = request.form['inputEmail']
         _password = request.form['inputPassword']
         con = mysql.connect()
+        cursor = con.cursor()
         cursor.callproc('sp_validateLogin', (_username,))
         data = cursor.fetchall()
         if len(data) > 0:
             if check_password_hash(str(data[0][3]), _password):
                 session['user'] = data[0][0]
-                return redirect('/userHome')
+                return redirect('/userhome')
             else:
                 return render_template('error.html', error='Wrong Email address or Password')
         else:
@@ -79,8 +82,10 @@ def signUp():
     except Exception as e:
         return json.dumps({'error': str(e)})
     finally:
-        cursor.close()
-        conn.close()
+        if 'cursor' in locals():
+            cursor.close()
+        if 'conn' in locals():
+            conn.close()
 
 
 @app.route('/userhome')
@@ -98,4 +103,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', '5000')))
