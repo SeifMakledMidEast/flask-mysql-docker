@@ -7,7 +7,7 @@
 - Fix the existing Flask issues needed for reliable startup. [done]
 - Create the MySQL schema and initialization scripts. [done]
 - Create the Flask application Dockerfile. [done]
-- Create the MySQL Dockerfile.
+- Create the MySQL Dockerfile. [done]
 - Create `docker-compose.yml` with networking, health checks, and persistence.
 - Run and test the complete application locally with Docker Compose.
 - Add container hardening and scan both images with Trivy.
