@@ -8,7 +8,7 @@
 - Create the MySQL schema and initialization scripts. [done]
 - Create the Flask application Dockerfile. [done]
 - Create the MySQL Dockerfile. [done]
-- Create `docker-compose.yml` with networking, health checks, and persistence. [done]
+- Create `docker-compose.yml` with networking, health checks, and persistence. [ready for integration test]
 - Run and test the complete application locally with Docker Compose.
 - Add container hardening and scan both images with Trivy.
 - Add GitHub Actions CI, tagged image builds, documentation, and branching workflow.
