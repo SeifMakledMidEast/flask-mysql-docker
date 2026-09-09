@@ -5,6 +5,7 @@ services:
       network: host
     image: flask-mysql-db:local
     restart: unless-stopped
+    command: ["--bind-address=0.0.0.0"]
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
       MYSQL_DATABASE: ${MYSQL_DATABASE_DB:?Set MYSQL_DATABASE_DB in .env}
@@ -18,6 +19,8 @@ services:
       timeout: 5s
       retries: 12
       start_period: 30s
+    ports:
+      - "3306:3306"
     cap_drop:
       - ALL
     cap_add:
@@ -40,9 +43,11 @@ services:
       MYSQL_DATABASE_USER: ${MYSQL_DATABASE_USER:?Set MYSQL_DATABASE_USER in .env}
       MYSQL_DATABASE_PASSWORD: ${MYSQL_DATABASE_PASSWORD:?Set MYSQL_DATABASE_PASSWORD in .env}
       MYSQL_DATABASE_DB: ${MYSQL_DATABASE_DB:?Set MYSQL_DATABASE_DB in .env}
-      MYSQL_DATABASE_HOST: db
+      MYSQL_DATABASE_HOST: host.docker.internal
       FLASK_SECRET_KEY: ${FLASK_SECRET_KEY:?Set FLASK_SECRET_KEY in .env}
       PORT: 5000
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     ports:
       - "5000:5000"
     depends_on:
