@@ -73,9 +73,9 @@ def signUp():
 
             if len(data) == 0:
                 conn.commit()
-                return json.dumps({'message': 'User created successfully !'})
+                return redirect('/signin')
             else:
-                return json.dumps({'error': str(data[0])})
+                return render_template('error.html', error=str(data[0]))
         else:
             return json.dumps({'html': '<span>Enter the required fields</span>'})
 
