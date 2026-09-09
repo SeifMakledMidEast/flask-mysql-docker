@@ -1,0 +1,58 @@
+services:
+  db:
+    build:
+      context: ./database
+    image: flask-mysql-db:local
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
+      MYSQL_DATABASE: ${MYSQL_DATABASE_DB:?Set MYSQL_DATABASE_DB in .env}
+      MYSQL_USER: ${MYSQL_DATABASE_USER:?Set MYSQL_DATABASE_USER in .env}
+      MYSQL_PASSWORD: ${MYSQL_DATABASE_PASSWORD:?Set MYSQL_DATABASE_PASSWORD in .env}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u root -p\"$${MYSQL_ROOT_PASSWORD}\" --silent"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: flask-mysql-app:local
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE_USER: ${MYSQL_DATABASE_USER:?Set MYSQL_DATABASE_USER in .env}
+      MYSQL_DATABASE_PASSWORD: ${MYSQL_DATABASE_PASSWORD:?Set MYSQL_DATABASE_PASSWORD in .env}
+      MYSQL_DATABASE_DB: ${MYSQL_DATABASE_DB:?Set MYSQL_DATABASE_DB in .env}
+      MYSQL_DATABASE_HOST: db
+      FLASK_SECRET_KEY: ${FLASK_SECRET_KEY:?Set FLASK_SECRET_KEY in .env}
+      PORT: 5000
+    ports:
+      - "5000:5000"
+    depends_on:
+      db:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:5000/', timeout=2)"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+volumes:
+  mysql_data:
