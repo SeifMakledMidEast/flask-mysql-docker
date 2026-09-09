@@ -2,6 +2,7 @@ services:
   db:
     build:
       context: ./database
+      network: host
     image: flask-mysql-db:local
     restart: unless-stopped
     environment:
@@ -19,6 +20,12 @@ services:
       start_period: 30s
     cap_drop:
       - ALL
+    cap_add:
+      - CHOWN
+      - DAC_OVERRIDE
+      - FOWNER
+      - SETGID
+      - SETUID
     security_opt:
       - no-new-privileges:true
 
@@ -26,6 +33,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      network: host
     image: flask-mysql-app:local
     restart: unless-stopped
     environment:
