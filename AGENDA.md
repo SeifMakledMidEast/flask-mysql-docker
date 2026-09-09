@@ -6,7 +6,7 @@
 - Move database settings and Flask secrets to environment variables. [done]
 - Fix the existing Flask issues needed for reliable startup. [done]
 - Create the MySQL schema and initialization scripts. [done]
-- Create the Flask application Dockerfile.
+- Create the Flask application Dockerfile. [done]
 - Create the MySQL Dockerfile.
 - Create `docker-compose.yml` with networking, health checks, and persistence.
 - Run and test the complete application locally with Docker Compose.
