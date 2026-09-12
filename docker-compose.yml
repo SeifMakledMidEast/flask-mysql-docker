@@ -4,7 +4,10 @@ services:
       context: ./database
       network: host
     image: flask-mysql-db:local
+    init: true
     restart: unless-stopped
+    pids_limit: 200
+    mem_limit: 768m
     command: ["--bind-address=0.0.0.0"]
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:?Set MYSQL_ROOT_PASSWORD in .env}
@@ -38,7 +41,10 @@ services:
       dockerfile: Dockerfile
       network: host
     image: flask-mysql-app:local
+    init: true
     restart: unless-stopped
+    pids_limit: 100
+    mem_limit: 256m
     environment:
       MYSQL_DATABASE_USER: ${MYSQL_DATABASE_USER:?Set MYSQL_DATABASE_USER in .env}
       MYSQL_DATABASE_PASSWORD: ${MYSQL_DATABASE_PASSWORD:?Set MYSQL_DATABASE_PASSWORD in .env}
