@@ -10,5 +10,11 @@
 - Create the MySQL Dockerfile. [done]
 - Create `docker-compose.yml` with networking, health checks, and persistence. [done]
 - Run and test the complete application locally with Docker Compose. [done in Cloud Shell]
-- Add container hardening and scan both images with Trivy.
-- Add GitHub Actions CI, tagged image builds, documentation, and branching workflow.
+- Add container hardening and scan both images with Trivy. [done]
+- Add GitHub Actions CI, tagged image builds, documentation, and branching workflow. [done]
+
+## Follow-up
+
+- Remediate remaining upstream image vulnerabilities reported by Trivy.
+- Use native Compose service networking on a non-nested Docker host.
+- Publish a release image after creating a version tag.
